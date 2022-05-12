@@ -1,5 +1,5 @@
-const GRID_SIZE = 30;
+const GRID_SIZE = 20;
 
-const WITDH = 600;
-const HEIGHT = 600;
+const WITDH = 400;
+const HEIGHT = 400;
 const SNAKE_SPEED = 8;
