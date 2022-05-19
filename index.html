@@ -4,11 +4,23 @@
 <head>
     <meta charset="UTF-8">
     <title>Snake game</title>
+    <link rel="stylesheet" href="CSS/css.css">
 </head>
 
 <body>
-    <div class="score" >
-       <p id = "sc">Score:</p> 
+    <div class="score">
+        <p id="sc">Score:</p>
+        <p id="bestScore">Best Score:</p>
+        <p>
+            Hướng dẫn chơi:
+            <br>
+            <img src="img/dichuyen.jpg" alt=""> để di chuyển
+            <br>
+            <img src="img/ob.png" style="width: 20px;height: 20px;"> Chướng ngại vật
+            <br>
+            <img src="img/food.png" style="width: 20px;height: 20px;"> Đồ ăn
+        </p>
+        <p onclick="start()" id="start">New Game</p>
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/p5.js"></script>
     <script src="JS/config.js" charset="utf-8"></script>

@@ -1,0 +1,28 @@
+.score{
+    position: absolute;
+    left:430px;
+}
+p {
+    font: bold 4.5em/1.5 Bebas, sans-serif;
+    color: #5CA17C;
+    font-size: 16px;
+    text-transform: uppercase;
+    background-image: linear-gradient(to bottom, #26BDA6, #FF9F65, #DED37E, #26BDA6);
+    background-size: auto 250%;
+    transition: background-position 0.5s;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-position: 0 100%;
+    
+}
+p:hover {
+    background-position: 0 0;
+   
+}
+img {
+    width: 60px;
+    height: 50px;
+}
+#start{
+    cursor: pointer;
+}

@@ -2,6 +2,8 @@ let snake;
 let food;
 let Ob;
 let sc = 0;
+localStorage.setItem('best', '0');
+
 function setup() {
     createCanvas(WITDH, HEIGHT);
     newGame();
@@ -9,12 +11,17 @@ function setup() {
 
 function draw() {
     background(0);
+
     if (!snake.isDead) {
         drawSnake();
     } else {
-        alert("GameOver!");
+        alert("Game Over!");
         newGame();
     }
+}
+
+function start() {
+    newGame();
 }
 
 function drawSnake() {
@@ -31,6 +38,10 @@ function drawSnake() {
         sc++;
         document.getElementById("sc").innerHTML = "Score: " + sc;
         eatFood();
+        if (sc > parseInt(localStorage.getItem('best'))) {
+            localStorage.setItem('best', sc.toString());
+            document.getElementById("bestScore").innerHTML = 'Best Score: ' + sc.toString();
+        }
     }
     //
     if (Ob.x == snake.head.x && Ob.y == snake.head.y) {
@@ -39,25 +50,33 @@ function drawSnake() {
 
 }
 
+//hàm new game tạo ra ván mới
 function newGame() {
     snake = new Snake();
     food = new Food();
     Ob = new obstacle();
     document.getElementById("sc").innerHTML = "Score: 0";
+    if (sc > parseInt(localStorage.getItem('best'))) {
+        localStorage.setItem('best', sc.toString());
+        document.getElementById("bestScore").innerHTML = 'Best Score: ' + sc.toString();
+    }
     sc = 0;
 }
 
+// hành động khi rắn ăn đồ ăn
 function eatFood() {
     snake.length++;
-    if(snake.length > 0){
+    a = createObstacle();
+    Ob.newObstacle(a.x, a.y);
+
+    if (snake.length > 0) {
         f = createFood();
-        food.newFood(f.x,f.y);
+        food.newFood(f.x, f.y);
     }
     else food.newFood1();
-    a = createObstacle();
-    Ob.newObstacle(a.x, a.y);;
 }
 
+// kew down
 function keyPressed() {
     if (keyCode == UP_ARROW && snake.vel.y != 1) {
         snake.vel.y = -1;
@@ -73,6 +92,7 @@ function keyPressed() {
         snake.vel.x = 1;
     }
 }
+
 function randomObstacle() {
     a = createVector(0, 0);
     let x = Math.floor(random(width));
@@ -83,20 +103,28 @@ function randomObstacle() {
 
     a.x = x;
     a.y = y;
+
     return a;
 }
 
 function checkPositionObstacle(a) {
+
+    if(a.x == snake.head.x && a.y == snake.head.y) return false;
+
     for (let vector of snake.body) {
         if (a.x == vector.x && a.y == vector.y) {
             return false;
         }
     }
+
     return true;
 }
 
 function checkFood(a) {
+
     if (a.x == Ob.x && a.y == Ob.y) return false;
+    if(a.x == snake.head.x && a.y == snake.head.y) return false;
+
     for (let vector of snake.body) {
         if (a.x == vector.x && a.y == vector.y) {
             return false;
@@ -108,7 +136,7 @@ function checkFood(a) {
 function createFood() {
     let a = randomObstacle();
     while (!checkFood(a)) {
-        a.x += GRID_SIZE;
+        a.y += GRID_SIZE;
     }
     return a;
 }
