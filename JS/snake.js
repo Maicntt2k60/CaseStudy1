@@ -7,7 +7,7 @@ class Snake {
         this.isDead = false;
     }
 
-    update() {
+    updateMove() {
         this.body.push(createVector(this.head.x, this.head.y));
 
         this.head.x += this.vel.x * GRID_SIZE;
@@ -20,13 +20,16 @@ class Snake {
             this.body.shift();
         }
 
+    }
+
+    checkDead(){
         for (let vector of this.body) {
             if (vector.x == this.head.x && vector.y == this.head.y) {
                 this.isDead = true;
             }
         }
     }
-
+    
     show() {
         noStroke();
         // draw snake head

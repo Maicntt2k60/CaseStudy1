@@ -1,150 +1,161 @@
 let snake;
 let food;
-let Ob;
 let sc = 0;
+let obstacle;
 localStorage.setItem('best', '0');
 
-function setup() {
-    createCanvas(WITDH, HEIGHT);
-    newGame();
-}
+class Game {
+    constructor() { }
 
-function draw() {
-    background(0);
-
-    if (!snake.isDead) {
-        drawSnake();
-    } else {
-        alert("Game Over!");
-        newGame();
-    }
-}
-
-function start() {
-    newGame();
-}
-
-function drawSnake() {
-    // update every SNAKE_SPEED frame
-    if (frameCount % SNAKE_SPEED == 0) {
-        snake.update();
+    eatFood() {
+        if (snake.head.x == food.x && snake.head.y == food.y) {
+            sc++;
+            document.getElementById("sc").innerHTML = "Score: " + sc;
+            if (sc > parseInt(localStorage.getItem('best'))) {
+                localStorage.setItem('best', sc.toString());
+                document.getElementById("bestScore").innerHTML = 'Best Score: ' + sc.toString();
+            }
+            snake.length++;
+            let a = this.createFood();
+            food.setX(a.x);
+            food.setY(a.y);
+            //
+            a = this.createObstacle();
+            obstacle.setX(a.x);
+            obstacle.setY(a.y);
+        }
     }
 
-    food.showFood();
-    snake.show();
-    Ob.showObstacle();
-    //
-    if (snake.head.x == food.x && snake.head.y == food.y) {
-        sc++;
-        document.getElementById("sc").innerHTML = "Score: " + sc;
-        eatFood();
+    drawSnake() {
+        // update every SNAKE_SPEED frame
+        if (frameCount % SNAKE_SPEED == 0) {
+            snake.updateMove();
+        }
+
+        if (obstacle.x == snake.head.x && obstacle.y == snake.head.y) {
+            snake.isDead = true;
+        }
+
+        food.showFood();
+        obstacle.showObstacle();
+        snake.show();
+    }
+
+    //hàm new game tạo ra ván mới
+    newGame() {
+        snake = new Snake();
+        food = new Food();
+        obstacle = new Obstacle();
+        document.getElementById("sc").innerHTML = "Score: 0";
         if (sc > parseInt(localStorage.getItem('best'))) {
             localStorage.setItem('best', sc.toString());
             document.getElementById("bestScore").innerHTML = 'Best Score: ' + sc.toString();
         }
-    }
-    //
-    if (Ob.x == snake.head.x && Ob.y == snake.head.y) {
-        snake.isDead = true;
+        sc = 0;
     }
 
-}
-
-//hàm new game tạo ra ván mới
-function newGame() {
-    snake = new Snake();
-    food = new Food();
-    Ob = new obstacle();
-    document.getElementById("sc").innerHTML = "Score: 0";
-    if (sc > parseInt(localStorage.getItem('best'))) {
-        localStorage.setItem('best', sc.toString());
-        document.getElementById("bestScore").innerHTML = 'Best Score: ' + sc.toString();
-    }
-    sc = 0;
-}
-
-// hành động khi rắn ăn đồ ăn
-function eatFood() {
-    snake.length++;
-    a = createObstacle();
-    Ob.newObstacle(a.x, a.y);
-
-    if (snake.length > 0) {
-        f = createFood();
-        food.newFood(f.x, f.y);
-    }
-    else food.newFood1();
-}
-
-// kew down
-function keyPressed() {
-    if (keyCode == UP_ARROW && snake.vel.y != 1) {
-        snake.vel.y = -1;
-        snake.vel.x = 0;
-    } else if (keyCode == DOWN_ARROW && snake.vel.y != -1) {
-        snake.vel.y = 1;
-        snake.vel.x = 0;
-    } else if (keyCode == LEFT_ARROW && snake.vel.x != 1) {
-        snake.vel.y = 0;
-        snake.vel.x = -1;
-    } else if (keyCode == RIGHT_ARROW && snake.vel.x != -1) {
-        snake.vel.y = 0;
-        snake.vel.x = 1;
-    }
-}
-
-function randomObstacle() {
-    a = createVector(0, 0);
-    let x = Math.floor(random(width));
-    let y = Math.floor(random(height));
-
-    x = Math.floor(x / GRID_SIZE) * GRID_SIZE;
-    y = Math.floor(y / GRID_SIZE) * GRID_SIZE;
-
-    a.x = x;
-    a.y = y;
-
-    return a;
-}
-
-function checkPositionObstacle(a) {
-
-    if(a.x == snake.head.x && a.y == snake.head.y) return false;
-
-    for (let vector of snake.body) {
-        if (a.x == vector.x && a.y == vector.y) {
-            return false;
+    // kew down
+    keyPressed() {
+        if (keyCode == UP_ARROW && snake.vel.y != 1) {
+            snake.vel.y = -1;
+            snake.vel.x = 0;
+        } else if (keyCode == DOWN_ARROW && snake.vel.y != -1) {
+            snake.vel.y = 1;
+            snake.vel.x = 0;
+        } else if (keyCode == LEFT_ARROW && snake.vel.x != 1) {
+            snake.vel.y = 0;
+            snake.vel.x = -1;
+        } else if (keyCode == RIGHT_ARROW && snake.vel.x != -1) {
+            snake.vel.y = 0;
+            snake.vel.x = 1;
         }
     }
 
-    return true;
-}
+    randomObstacle() {
+        let a = createVector(0, 0);
+        let x = Math.floor(random(width));
+        let y = Math.floor(random(height));
 
-function checkFood(a) {
+        x = Math.floor(x / GRID_SIZE) * GRID_SIZE;
+        y = Math.floor(y / GRID_SIZE) * GRID_SIZE;
 
-    if (a.x == Ob.x && a.y == Ob.y) return false;
-    if(a.x == snake.head.x && a.y == snake.head.y) return false;
+        a.x = x;
+        a.y = y;
 
-    for (let vector of snake.body) {
-        if (a.x == vector.x && a.y == vector.y) {
-            return false;
+        return a;
+    }
+
+    checkPositionObstacle(a) {
+
+        if (a.x == snake.head.x && a.y == snake.head.y) return false;
+
+        for (let vector of snake.body) {
+            if (a.x == vector.x && a.y == vector.y) {
+                return false;
+            }
         }
+
+        return true;
     }
-    return true;
+
+    checkFood(a) {
+
+        if (a.x == obstacle.x && a.y == obstacle.y) return false;
+        if (a.x == snake.head.x && a.y == snake.head.y) return false;
+
+        for (let vector of snake.body) {
+            if (a.x == vector.x && a.y == vector.y) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    createFood() {
+        let a = this.randomObstacle();
+        while (!this.checkFood(a)) {
+            a.y += GRID_SIZE;
+        }
+        return a;
+    }
+
+    createObstacle() {
+        let a = this.randomObstacle();
+        while (!this.checkPositionObstacle(a)) {
+            a.x += GRID_SIZE;
+        }
+        return a;
+    }
+    check() {
+        snake.checkDead();
+        return snake.isDead;
+    }
+
+    start() {
+        if (this.check()) {
+            alert("game over");
+            this.newGame();
+        }
+        this.drawSnake();
+        this.keyPressed();
+        this.eatFood();
+        this.check();
+    }
 }
 
-function createFood() {
-    let a = randomObstacle();
-    while (!checkFood(a)) {
-        a.y += GRID_SIZE;
-    }
-    return a;
+let g = new Game();
+
+function start() {
+    g.newGame();
 }
 
-function createObstacle() {
-    let a = randomObstacle();
-    while (!checkPositionObstacle(a)) {
-        a.x += GRID_SIZE;
-    }
-    return a;
+function setup() {
+    createCanvas(WITDH, HEIGHT);
+    g.newGame();
+
+}
+
+function draw() {
+    background(0);
+    g.start();
 }
